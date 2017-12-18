@@ -30,7 +30,7 @@ public abstract class ImmutableBean<CONCRETE extends ImmutableBean> implements S
 {
 	private static final long serialVersionUID = 1L;
 
-	ImmutableBeanAssocStrategy mutablityStrategy;
+	ImmutableBeanAssocStrategy mutabilityStrategy;
 
 	Keyword specKey;
 
@@ -47,7 +47,7 @@ public abstract class ImmutableBean<CONCRETE extends ImmutableBean> implements S
 		try
 		{
 			final T instance = clazz.newInstance();
-			instance.mutablityStrategy = new ImmutableAssoc();
+			instance.mutabilityStrategy = new ImmutableAssoc();
 			return instance;
 
 		}
@@ -62,7 +62,7 @@ public abstract class ImmutableBean<CONCRETE extends ImmutableBean> implements S
 		try
 		{
 			final T instance = clazz.newInstance();
-			instance.mutablityStrategy = new TransientAssoc(PersistentHashMap.EMPTY.asTransient());
+			instance.mutabilityStrategy = new TransientAssoc(PersistentHashMap.EMPTY.asTransient());
 			return instance;
 
 		}
@@ -77,7 +77,7 @@ public abstract class ImmutableBean<CONCRETE extends ImmutableBean> implements S
 		try
 		{
 			final T instance = clazz.newInstance();
-			instance.mutablityStrategy = new TransientAssoc(((ATransientMap) ((IEditableCollection) origin.getRaw()).asTransient()));
+			instance.mutabilityStrategy = new TransientAssoc(((ATransientMap) ((IEditableCollection) origin.getRaw()).asTransient()));
 			return instance;
 
 		}
@@ -89,7 +89,7 @@ public abstract class ImmutableBean<CONCRETE extends ImmutableBean> implements S
 
 	protected void resetInternalMap(APersistentMap internalMap)
 	{
-		this.mutablityStrategy.resetInternalMap(internalMap);
+		this.mutabilityStrategy.resetInternalMap(internalMap);
 	}
 
 	protected void resetSpecKey(Keyword key)
@@ -226,7 +226,7 @@ public abstract class ImmutableBean<CONCRETE extends ImmutableBean> implements S
 
 	public String toJson()
 	{
-		return (String) ClojureJson.GENERATE_STRING.invoke(this.mutablityStrategy.getRaw());
+		return (String) ClojureJson.GENERATE_STRING.invoke(this.mutabilityStrategy.getRaw());
 	}
 
 	public CONCRETE withEmpty()
@@ -258,7 +258,7 @@ public abstract class ImmutableBean<CONCRETE extends ImmutableBean> implements S
 	public <T extends ImmutableBean> T attachSpec(String specKey)
 	{
 		final Keyword intern = Keyword.intern("rasp.spec", specKey);
-		final T newBean = (T) create(this.getClass(), this.mutablityStrategy.getPersistRaw());
+		final T newBean = (T) create(this.getClass(), this.mutabilityStrategy.getPersistRaw());
 		newBean.resetSpecKey(intern);
 		return newBean;
 	}
@@ -283,12 +283,12 @@ public abstract class ImmutableBean<CONCRETE extends ImmutableBean> implements S
 	@SuppressWarnings("unchecked")
 	public CONCRETE withState(APersistentMap state)
 	{
-		return this.mutablityStrategy.withState(this, state);
+		return this.mutabilityStrategy.withState(this, state);
 	}
 
 	public CONCRETE asTransient()
 	{
-		if (this.mutablityStrategy.isPersist()) {
+		if (this.mutabilityStrategy.isPersist()) {
 			final CONCRETE aTransient = createTransient(getConcreteClass(), this);
 			return aTransient;
 		} else {
@@ -304,13 +304,13 @@ public abstract class ImmutableBean<CONCRETE extends ImmutableBean> implements S
 
 	public CONCRETE asImmutable()
 	{
-		if (this.mutablityStrategy.isPersist())
+		if (this.mutabilityStrategy.isPersist())
 		{
 			return (CONCRETE) this;
 		}
 		else
 		{
-			return withState(this.mutablityStrategy.getPersistRaw());
+			return withState(this.mutabilityStrategy.getPersistRaw());
 		}
 	}
 
@@ -326,79 +326,79 @@ public abstract class ImmutableBean<CONCRETE extends ImmutableBean> implements S
 
 	public CONCRETE assoc(Object key, Object value)
 	{
-		return mutablityStrategy.assoc(this, key, value);
+		return mutabilityStrategy.assoc(this, key, value);
 	}
 
 	public CONCRETE assocWithEnum(Enum key, Object value)
 	{
-		return mutablityStrategy.assocWithEnum(this, key, value);
+		return mutabilityStrategy.assocWithEnum(this, key, value);
 	}
 
 	public CONCRETE assocIn(Object value, Object... path)
 	{
-		return mutablityStrategy.assocIn(this, value, path);
+		return mutabilityStrategy.assocIn(this, value, path);
 	}
 
 	public CONCRETE assocInWithEnum(Object value, Enum... path)
 	{
-		return mutablityStrategy.assocInWithEnum(this, value, path);
+		return mutabilityStrategy.assocInWithEnum(this, value, path);
 	}
 
 	public CONCRETE dissoc(Object key)
 	{
-		return mutablityStrategy.assocInWithEnum(this, key);
+		return mutabilityStrategy.assocInWithEnum(this, key);
 	}
 
 	public CONCRETE dissocWithEnum(Enum key)
 	{
-		return mutablityStrategy.dissocWithEnum(this, key);
+		return mutabilityStrategy.dissocWithEnum(this, key);
 	}
 
 	public CONCRETE dissocIn(Object... path)
 	{
-		return mutablityStrategy.dissocIn(this, path);
+		return mutabilityStrategy.dissocIn(this, path);
 	}
 
 	public CONCRETE dissocInWithEnum(Enum... path)
 	{
-		return mutablityStrategy.dissocInWithEnum(this, path);
+		return mutabilityStrategy.dissocInWithEnum(this, path);
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T valAt(Object key)
 	{
-		return (T) this.mutablityStrategy.getLookupRaw().valAt(key);
+		return (T) this.mutabilityStrategy.getLookupRaw().valAt(key);
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T valAtEnum(Enum key)
 	{
-		return (T) this.mutablityStrategy.getLookupRaw().valAt(key.name());
+		return (T) this.mutabilityStrategy.getLookupRaw().valAt(key.name());
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T valIn(T defaultValue, Object... path)
 	{
-		return (T) ClojureRT.GET_IN.invoke(this.mutablityStrategy.getRaw(), ArraySeq.create(path), defaultValue);
+		return (T) ClojureRT.GET_IN.invoke(this.mutabilityStrategy.getRaw(), ArraySeq.create(path), defaultValue);
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T valInEnum(T defaultValue, Enum... path)
 	{
-		return (T) ClojureRT.GET_IN.invoke(this.mutablityStrategy.getRaw(), ClojureRT.MAP.invoke(TO_ENUM_NAME, ArraySeq.create((Object[]) path)),
+		return (T) ClojureRT.GET_IN.invoke(this.mutabilityStrategy.getRaw(), ClojureRT.MAP.invoke(TO_ENUM_NAME, ArraySeq.create((Object[]) path)),
 			defaultValue);
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T optIn(Object... path)
 	{
-		return (T) ClojureRT.GET_IN.invoke(this.mutablityStrategy.getRaw(), ArraySeq.create(path));
+		return (T) ClojureRT.GET_IN.invoke(this.mutabilityStrategy.getRaw(), ArraySeq.create(path));
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T optInEnum(Enum... path)
 	{
-		return (T) ClojureRT.GET_IN.invoke(this.mutablityStrategy.getRaw(), ClojureRT.MAP.invoke(TO_ENUM_NAME, ArraySeq.create((Object[]) path)));
+		return (T) ClojureRT.GET_IN.invoke(this.mutabilityStrategy.getRaw(), ClojureRT.MAP.invoke(TO_ENUM_NAME, ArraySeq.create((Object[]) path)));
 	}
 
 	public <T extends ImmutableBean> T optInAsImmutableBean(Class<T> beanClass, Object... path)
@@ -446,19 +446,19 @@ public abstract class ImmutableBean<CONCRETE extends ImmutableBean> implements S
 
 	public boolean valImmutable()
 	{
-		return this.mutablityStrategy.isPersist();
+		return this.mutabilityStrategy.isPersist();
 	}
 
 	@Override
 	public APersistentMap getRaw()
 	{
-		return this.mutablityStrategy.getPersistRaw();
+		return this.mutabilityStrategy.getPersistRaw();
 	}
 
 	@Override
 	public String toString()
 	{
-		return String.valueOf(this.mutablityStrategy.getRaw());
+		return String.valueOf(this.mutabilityStrategy.getRaw());
 	}
 
 	@Override
@@ -467,12 +467,12 @@ public abstract class ImmutableBean<CONCRETE extends ImmutableBean> implements S
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		ImmutableBean that = (ImmutableBean) o;
-		return Objects.equals(this.mutablityStrategy.getRaw(), that.mutablityStrategy.getRaw());
+		return Objects.equals(this.mutabilityStrategy.getRaw(), that.mutabilityStrategy.getRaw());
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(this.mutablityStrategy.getRaw());
+		return Objects.hash(this.mutabilityStrategy.getRaw());
 	}
 }
