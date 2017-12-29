@@ -7,28 +7,26 @@
  * 	 the terms of this license.
  *   You must not remove this notice, or any other, from this software.
  **/
-package net.ci4j.immutable.fn;
+package net.ci4j.immutable;
 
-import java.io.Serializable;
-
-import net.ci4j.fn.Fn6;
-import clojure.lang.AFn;
-
-class IFn6 extends AFn implements Serializable
+public class JsonParseException extends RuntimeException
 {
-	private static final long serialVersionUID = 1L;
-
-	private final Fn6 fn;
-
-	IFn6(Fn6 fn)
+	public JsonParseException()
 	{
-		this.fn = fn;
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public Object invoke(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6)
+	public JsonParseException(String message)
 	{
-		return fn.apply(arg1, arg2, arg3, arg4, arg5, arg6);
+		super(message);
+	}
+
+	public JsonParseException(String message, Throwable cause)
+	{
+		super(message, cause);
+	}
+
+	public JsonParseException(Throwable cause)
+	{
+		super(cause);
 	}
 }

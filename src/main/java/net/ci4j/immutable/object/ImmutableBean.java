@@ -1,3 +1,12 @@
+/**
+ *   Copyright (c) Zhizhi Deng. All rights reserved.
+ *   The use and distribution terms for this software are covered by the
+ *   Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
+ *   which can be found in the file epl-v10.html at the root of this distribution.
+ *   By using this software in any fashion, you are agreeing to be bound by
+ * 	 the terms of this license.
+ *   You must not remove this notice, or any other, from this software.
+ **/
 package net.ci4j.immutable.object;
 
 import static net.ci4j.immutable.object.ImmutableBeanAssocStrategy.TO_ENUM_NAME;
@@ -24,6 +33,105 @@ import clojure.lang.PersistentArrayMap;
 import clojure.lang.PersistentHashMap;
 
 /**
+ * <p> A abstract class to build immutable java beans. </p>
+ *
+ * <p> An immutable java bean should:
+ * <ul>
+ *     <li>Extend this abstract class and use itself as the CONCRETE type parameter</li>
+ *     <li>Ensure there is a public non-parameter default constructor</li>
+ *     <li>Implement the {@link #getConcreteClass()} method, return the current class type</li>
+ *     <li>Have a public static final EMPTY field, invoke the {@link ImmutableBean#create(Class)} method to obtain a default empty instance, pass in the current concrete type as parameter.</li>
+ *     <li>Implement the {@link #refEmpty()} method, return the EMPTY value defined above</li>
+ *     <li>Define getter methods, invoke {@link #valAt(Object)} or {@link #valAtEnum(Enum)} internally to retrieve field value</li>
+ *     <li>To avoid confusion, setter methods should prefix with {@code assoc}, invoke {@link #assoc(Object, Object)} or {@link #assocWithEnum(Enum, Object)} internally to store field value. Assoc methods should always return the new bean instance returned by the {@link #assoc(Object, Object)} method.</li>
+ * </ul>
+ * </p>
+ * <p> When using a immutable java bean
+ * <ul>
+ *     <li>In most of the cases, starts with the EMPTY instance. Avoid calling constructor directly unless you already have a PersistentMap as internal state.</li>
+ *     <li>When associating lots of properties at the same time, use {@link #asTransient()} to obtain a mutable copy for modification then call {@link #asImmutable()} at the end to avoid creating lots of intermediate objects.</li>
+ * </ul>
+ * </p>
+ *
+ * <p>Example<br/>
+ * <b>A concrete immutable bean</b>
+ * <pre>
+ *     public class Person extends ImmutableBean&lt;Person> {
+ *
+ *         public final static Person EMPTY = create(Person.class);
+ *
+ *         {@literal @}Override
+ *         protected Class<Person> getConcreteClass() {
+ *             return Person.class;
+ *         }
+ *
+ *         {@literal @}Override
+ *         public Person refEmpty() {
+ *             return EMPTY;
+ *         }
+ *
+ *         private enum Fields {
+ *             name,
+ *             age
+ *         }
+ *
+ *         public String getName() {
+ *             return valAtEnum(Fields.name);
+ *         }
+ *
+ *         public Person assocName(String name) {
+ *             return assocWithEnum(Fields.name, name);
+ *         }
+ *
+ *         public Integer getAge() {
+ *             return valAtEnum(Fields.age);
+ *         }
+ *
+ *         public Person assocAge(Integer age) {
+ *             return assocWithEnum(Fields.age, age);
+ *         }
+ *     }
+ * </pre>
+ *
+ * <b>Using a immutable bean</b>
+ * <pre>
+ *     public class PersonManager {
+ *         private final static Person DEFAULT_ADULT = Person.EMPTY.assocAge(18);  //You can have other defaults to start with
+ *
+ *         private Person currentPerson;
+ *
+ *         public void initPerson(String name, int age) {
+ *             this.currentPerson = Person.EMPTY             //Use EMPTY as a seed
+ *                                        .asTransient()     //Convert to transient (mutable) copy for multiple association
+ *                                        .assocName(name)
+ *                                        .assocAge(age)
+ *                                        .asPersistent();   //Convert back to immutable object.
+ *         }
+ *
+ *         public void initPerson(String name) {
+ *             this.currentPerson = DEFAULT_ADULT.assocName(name);   //Use alternative default as a seed
+ *         }
+ *
+ *         public Person getCurrentPerson() {
+ *             return this.currentPerson;
+ *         }
+ *
+ *         public void setCurrentPerson(Person person) {
+ *             this.currentPerson = person;
+ *         }
+ *
+ *         public void updateCurrentPerson(Function&lt;Person, Person> updater) {
+ *             this.setCurrentPerson(updater.apply(this.getCurrentPerson()));  // A util update function to avoid calling getter/setter too often
+ *         }
+ *
+ *         public void increaseAge(int years) {
+ *             this.updateCurrentPerson(it -> it.assocAge(it.getAge() + years))
+ *         }
+ *     }
+ * </pre>
+ *
+ * </p>
+ *
  * @author Zhizhi Deng
  */
 public abstract class ImmutableBean<CONCRETE extends ImmutableBean> implements Serializable, ImmutableCollection<APersistentMap>

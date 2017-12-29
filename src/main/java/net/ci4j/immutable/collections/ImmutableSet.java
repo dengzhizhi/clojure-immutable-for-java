@@ -1,10 +1,20 @@
+/**
+ *   Copyright (c) Zhizhi Deng. All rights reserved.
+ *   The use and distribution terms for this software are covered by the
+ *   Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
+ *   which can be found in the file epl-v10.html at the root of this distribution.
+ *   By using this software in any fashion, you are agreeing to be bound by
+ * 	 the terms of this license.
+ *   You must not remove this notice, or any other, from this software.
+ **/
+
 package net.ci4j.immutable.collections;
 
-import net.ci4j.immutable.ClojureRT;
 import clojure.lang.APersistentSet;
 import clojure.lang.IEditableCollection;
 import clojure.lang.ITransientCollection;
 import clojure.lang.PersistentHashSet;
+import net.ci4j.immutable.ClojureRT;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -16,7 +26,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
- * Immutable list backing by clojure vector
+ * A typed immutable set backing by clojure set
  *
  * @author Zhizhi Deng
  */
@@ -32,64 +42,118 @@ public class ImmutableSet<E> implements Set<E>, ImmutableCollection<APersistentS
 		this.aSet = vector != null ? vector : PersistentHashSet.EMPTY;
 	}
 
-	public static <T> ImmutableSet<T> refEmpty() {
+	public static <T> ImmutableSet<T> refEmpty()
+	{
 		return EMPTY;
 	}
 
-	public static <T> ImmutableSet<T> create(T... items) {
-		if (items == null || items.length == 0) {
+	/**
+	 * Obtain an ImmutableSet instance of the given items
+	 *
+	 * @param items in the result immutable set
+	 * @return An ImmutableSet instance
+	 */
+	public static <T> ImmutableSet<T> create(T... items)
+	{
+		if (items == null || items.length == 0)
+		{
 			return EMPTY;
-		} else {
+		}
+		else
+		{
 			return new ImmutableSet<>(PersistentHashSet.create((Object[]) items));
 		}
 	}
 
-	public static <T> ImmutableSet<T> create(List<T> items) {
-		if (items == null || items.isEmpty()) {
+	/**
+	 * Obtain an ImmutableSet instance of the given items
+	 *
+	 * @param items in the result immutable set
+	 * @return An ImmutableSet instance
+	 */
+	public static <T> ImmutableSet<T> create(List<T> items)
+	{
+		if (items == null || items.isEmpty())
+		{
 			return EMPTY;
-		} else {
+		}
+		else
+		{
 			return new ImmutableSet<>(PersistentHashSet.create(items));
 		}
 	}
 
-	public static <T> ImmutableSet<T> create(Iterable<T> items) {
+	/**
+	 * Obtain an ImmutableSet instance of the given items
+	 *
+	 * @param items in the result immutable set
+	 * @return An ImmutableSet instance
+	 */
+	public static <T> ImmutableSet<T> create(Iterable<T> items)
+	{
 		return new ImmutableSet<>(PersistentHashSet.create(items));
 	}
 
-	public static <T> ImmutableSet<T> fromString(String ednString) {
+	/**
+	 * Obtain an ImmutableSet object represented by the EDN (https://github.com/edn-format/edn) string.
+	 *
+	 * @param ednString The edn format string representing a clojure set
+	 * @return An ImmutableSet instance
+	 * @throws ClassCastException if the ednString does not represent a valid clojure vector
+	 */
+	public static <T> ImmutableSet<T> fromString(String ednString)
+	{
 		return ednString != null ? new ImmutableSet(ClojureRT.readString(ednString)) : EMPTY;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int size()
 	{
 		return aSet.size();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isEmpty()
 	{
 		return aSet.count() == 0;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean contains(Object o)
 	{
 		return aSet.contains(o);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Iterator<E> iterator()
 	{
 		return aSet.iterator();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Object[] toArray()
 	{
 		return aSet.toArray();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public <T> T[] toArray(T[] a)
 	{
@@ -97,17 +161,22 @@ public class ImmutableSet<E> implements Set<E>, ImmutableCollection<APersistentS
 	}
 
 	@Override
+	@Deprecated
 	public boolean add(E e)
 	{
 		throw new UnsupportedOperationException("Use .cons instead");
 	}
 
 	@Override
+	@Deprecated
 	public boolean remove(Object o)
 	{
 		throw new UnsupportedOperationException("Use .filterOut instead");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean containsAll(Collection<?> c)
 	{
@@ -142,6 +211,9 @@ public class ImmutableSet<E> implements Set<E>, ImmutableCollection<APersistentS
 		throw new UnsupportedOperationException("Use refEmpty() instead.");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean equals(Object o)
 	{
@@ -151,79 +223,162 @@ public class ImmutableSet<E> implements Set<E>, ImmutableCollection<APersistentS
 		return Objects.equals(aSet, that.aSet);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int hashCode()
 	{
 		return Objects.hash(aSet);
 	}
 
-	public ImmutableSet<E> cons(E item) {
-		return new ImmutableSet<>((APersistentSet) aSet.cons(item));
+	/**
+	 * Create a new ImmutableSet with the given item added to the original set.
+	 * If the given item is already existing in the original set, it should return the
+	 * original set instance.
+	 *
+	 * @param item The item to be added
+	 * @return a ImmutableSet contains all items in the original set and the given item.
+	 */
+	public ImmutableSet<E> cons(E item)
+	{
+		final APersistentSet cons = (APersistentSet) aSet.cons(item);
+		return aSet != cons
+			? new ImmutableSet<>(cons)
+			: this;
 	}
 
-	public ImmutableSet<E> consAll(E... items) {
+	/**
+	 * Create a new ImmutableSet with all the given items added to the original set.
+	 * If all the given items are already existing in the original set, it should return the
+	 * original set instance.
+	 *
+	 * @param items The items to be added
+	 * @return a ImmutableSet contains all items in the original set and the given items.
+	 */
+	public ImmutableSet<E> consAll(E... items)
+	{
 		final ITransientCollection trans = ((IEditableCollection) aSet).asTransient();
 		for (E item : items)
 		{
 			trans.conj(item);
 		}
-		return new ImmutableSet<>((APersistentSet) trans.persistent());
+		final APersistentSet newSet = (APersistentSet) trans.persistent();
+		return aSet.size() != newSet.size()
+			? new ImmutableSet<>(newSet)
+			: this;
 	}
 
-	public ImmutableSet<E> consAll(Collection<E> items) {
+	public ImmutableSet<E> consAll(Collection<E> items)
+	{
 		final ITransientCollection trans = ((IEditableCollection) this.aSet).asTransient();
 		for (E item : items)
 		{
 			trans.conj(item);
 		}
-		return new ImmutableSet<>((APersistentSet) trans.persistent());
+		final APersistentSet newSet = (APersistentSet) trans.persistent();
+		return aSet.size() != newSet.size()
+			? new ImmutableSet<>(newSet)
+			: this;
 	}
 
-	public ImmutableSet<E> filterOut(Predicate<E> filter) {
+	/**
+	 * Create a new ImmutableSet WITHOUT the items matches the filter.
+	 * <p>
+	 * This operation is NOT lazy. A new ImmutableSet result will be fully created on every
+	 * invocation, unless there is no item to be filtered out, in this case the original
+	 * ImmutableSet instance shall be returned.
+	 * <p>
+	 * For better performance in chained collection transformation, consider using {@link List#stream()} instead.
+	 *
+	 * @param filter A lambda to select the items to be excluded.
+	 * @return A new ImmutableSet without the items match the filter. If no item has been filtered out, the original set instance shall be returned.
+	 */
+	public ImmutableSet<E> filterOut(Predicate<E> filter)
+	{
 		final ITransientCollection trans = ((IEditableCollection) this.aSet).asTransient();
 		for (Object item : aSet)
 		{
-			if (!filter.test((E) item)) {
+			if (!filter.test((E) item))
+			{
 				trans.conj(item);
 			}
 		}
-		return new ImmutableSet<>((APersistentSet) trans.persistent());
+		final APersistentSet newSet = (APersistentSet) trans.persistent();
+		return newSet.size() != aSet.size()
+			? new ImmutableSet<>(newSet)
+			: this;
 	}
 
-	public ImmutableSet<E> filter(Predicate<E> filter) {
+	/**
+	 * Create a new ImmutableSet contains only the items match the filter.
+	 * <p>
+	 * This operation is NOT lazy. A new ImmutableSet result will be fully created on every
+	 * invocation, unless all items are included in the result, in this case the original
+	 * ImmutableSet instance shall be returned.
+	 * </p>
+	 * <p>
+	 * For better performance in chained collection transformation, consider using {@link List#stream()} instead.
+	 * </p>
+	 * @param filter A lambda to select the items to be included.
+	 * @return A new ImmutableSet contains the items match the filter. If no item has been filtered out, the original list instance shall be
+	 * returned.
+	 */
+	public ImmutableSet<E> filter(Predicate<E> filter)
+	{
 		final ITransientCollection trans = ((IEditableCollection) this.aSet).asTransient();
 		for (Object item : aSet)
 		{
-			if (filter.test((E) item)) {
+			if (filter.test((E) item))
+			{
 				trans.conj(item);
 			}
 		}
-		return new ImmutableSet<>((APersistentSet) trans.persistent());
+		final APersistentSet newSet = (APersistentSet) trans.persistent();
+		return newSet.size() != aSet.size()
+			? new ImmutableSet<>(newSet)
+			: this;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public Stream<E> stream() {
+	public Stream<E> stream()
+	{
 		return aSet.stream();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Stream<E> parallelStream()
 	{
 		return aSet.parallelStream();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void forEach(Consumer<? super E> action)
 	{
 		aSet.forEach(action);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString()
 	{
-		return "ImmutableSet{" + "vector=" + aSet + '}';
+		return "ImmutableSet{" + "set=" + aSet + '}';
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public APersistentSet getRaw()
 	{
