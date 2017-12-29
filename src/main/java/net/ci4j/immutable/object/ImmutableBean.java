@@ -48,7 +48,7 @@ import clojure.lang.PersistentHashMap;
  * </p>
  * <p> When using a immutable java bean
  * <ul>
- *     <li>In most of the cases, starts with the EMPTY instance. Avoid calling constructor directly unless you already have a PersistentMap as internal state.</li>
+ *     <li>In most of the cases, starts with the EMPTY instance, avoid calling constructor directly. Static create methods should be only used when </li>
  *     <li>When associating lots of properties at the same time, use {@link #asTransient()} to obtain a mutable copy for modification then call {@link #asImmutable()} at the end to avoid creating lots of intermediate objects.</li>
  * </ul>
  * </p>
