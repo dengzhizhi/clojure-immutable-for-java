@@ -7,7 +7,7 @@
  * 	 the terms of this license.
  *   You must not remove this notice, or any other, from this software.
  **/
-package net.ci4j.immutable;
+package net.ci4j.immutable.clojure_utils;
 
 import net.ci4j.fn.Fn0;
 import clojure.java.api.Clojure;

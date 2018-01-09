@@ -14,7 +14,7 @@ import clojure.lang.APersistentSet;
 import clojure.lang.IEditableCollection;
 import clojure.lang.ITransientCollection;
 import clojure.lang.PersistentHashSet;
-import net.ci4j.immutable.ClojureRT;
+import net.ci4j.immutable.clojure_utils.ClojureRT;
 
 import java.util.Collection;
 import java.util.Iterator;

@@ -16,8 +16,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import net.ci4j.immutable.ClojureJson;
-import net.ci4j.immutable.ClojureRT;
+import net.ci4j.immutable.clojure_utils.ClojureJson;
+import net.ci4j.immutable.clojure_utils.ClojureRT;
 import net.ci4j.immutable.collections.ImmutableCollection;
 import net.ci4j.immutable.collections.ImmutableList;
 import net.ci4j.immutable.collections.ImmutableMap;

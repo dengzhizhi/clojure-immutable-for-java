@@ -15,9 +15,9 @@ import clojure.lang.IPersistentVector;
 import clojure.lang.ISeq;
 import clojure.lang.ITransientVector;
 import clojure.lang.PersistentVector;
-import net.ci4j.immutable.ClojureJson;
-import net.ci4j.immutable.ClojureRT;
-import net.ci4j.immutable.JsonParseException;
+import net.ci4j.immutable.clojure_utils.ClojureJson;
+import net.ci4j.immutable.clojure_utils.ClojureRT;
+import net.ci4j.immutable.clojure_utils.JsonParseException;
 
 import java.util.Collection;
 import java.util.Iterator;

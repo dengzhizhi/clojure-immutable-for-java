@@ -17,9 +17,9 @@ import clojure.lang.ISeq;
 import clojure.lang.ITransientMap;
 import clojure.lang.PersistentArrayMap;
 import clojure.lang.PersistentHashMap;
-import net.ci4j.immutable.ClojureJson;
-import net.ci4j.immutable.ClojureRT;
-import net.ci4j.immutable.JsonParseException;
+import net.ci4j.immutable.clojure_utils.ClojureJson;
+import net.ci4j.immutable.clojure_utils.ClojureRT;
+import net.ci4j.immutable.clojure_utils.JsonParseException;
 
 import java.util.Collection;
 import java.util.Iterator;

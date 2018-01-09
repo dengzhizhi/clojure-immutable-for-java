@@ -9,15 +9,13 @@
  **/
 package net.ci4j.immutable.collections;
 
-import net.ci4j.immutable.JsonParseException;
+import net.ci4j.immutable.clojure_utils.JsonParseException;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-
-import static org.junit.Assert.*;
 
 public class ImmutableListTest
 {

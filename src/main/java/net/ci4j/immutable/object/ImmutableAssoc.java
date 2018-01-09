@@ -12,10 +12,10 @@ package net.ci4j.immutable.object;
 import clojure.lang.APersistentMap;
 import clojure.lang.ArraySeq;
 import clojure.lang.PersistentArrayMap;
-import net.ci4j.immutable.ClojureRT;
+import net.ci4j.immutable.clojure_utils.ClojureRT;
 
-import static net.ci4j.immutable.ClojureRT.DISSOC;
-import static net.ci4j.immutable.ClojureRT.DROP_LAST;
+import static net.ci4j.immutable.clojure_utils.ClojureRT.DISSOC;
+import static net.ci4j.immutable.clojure_utils.ClojureRT.DROP_LAST;
 
 class ImmutableAssoc implements ImmutableBeanAssocStrategy
 {

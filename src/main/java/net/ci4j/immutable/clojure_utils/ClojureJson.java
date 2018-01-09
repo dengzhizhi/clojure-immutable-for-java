@@ -7,26 +7,15 @@
  * 	 the terms of this license.
  *   You must not remove this notice, or any other, from this software.
  **/
-package net.ci4j.immutable;
+package net.ci4j.immutable.clojure_utils;
 
-public class JsonParseException extends RuntimeException
+import clojure.lang.IFn;
+
+public class ClojureJson
 {
-	public JsonParseException()
-	{
+	static {
+		ClojureRT.require("cheshire.core");
 	}
-
-	public JsonParseException(String message)
-	{
-		super(message);
-	}
-
-	public JsonParseException(String message, Throwable cause)
-	{
-		super(message, cause);
-	}
-
-	public JsonParseException(Throwable cause)
-	{
-		super(cause);
-	}
+	public static IFn GENERATE_STRING = ClojureRT.var("cheshire.core", "generate-string");
+	public static IFn PARSE_STRING = ClojureRT.var("cheshire.core", "parse-string");
 }
