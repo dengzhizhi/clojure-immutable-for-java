@@ -8,7 +8,7 @@ public class SimpleStateCoreStrategy implements StateCoreStrategy
 
 	public SimpleStateCoreStrategy(ReduxState initialState)
 	{
-		this.state = state;
+		this.state = initialState;
 	}
 
 	@Override

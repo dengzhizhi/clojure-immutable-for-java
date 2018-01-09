@@ -1,6 +1,7 @@
 package net.ci4j.immutable.redux;
 
 import net.ci4j.immutable.redux.impl.AtomStateCoreStrategy;
+import net.ci4j.immutable.redux.impl.LockingStateCoreStrategy;
 import net.ci4j.immutable.redux.impl.SimpleStateCoreStrategy;
 import net.ci4j.immutable.redux.impl.StateCoreStrategy;
 
@@ -9,7 +10,7 @@ import java.util.function.Function;
 public enum StateCore
 {
 	SINGLE_THREAD(SimpleStateCoreStrategy::new),
-	LOCKING(SimpleStateCoreStrategy::new),
+	LOCKING(LockingStateCoreStrategy::new),
 	ATOM(AtomStateCoreStrategy::new);
 
 	private Function<ReduxState, StateCoreStrategy> strategyFactory;

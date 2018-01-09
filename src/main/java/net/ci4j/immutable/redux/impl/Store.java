@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import net.ci4j.fn.VoidFn2;
 import net.ci4j.immutable.clojure_utils.ClojureJson;
 import net.ci4j.immutable.collections.ImmutableList;
+import net.ci4j.immutable.redux.Middleware;
 import net.ci4j.immutable.redux.ReduxAction;
 import net.ci4j.immutable.redux.ReduxState;
 import net.ci4j.immutable.redux.ReduxStore;
@@ -18,33 +19,33 @@ import static net.ci4j.immutable.redux.impl.Loggers.NOTIFIER_LOGGER;
 import static net.ci4j.immutable.redux.impl.Loggers.REDUCER_LOGGER;
 import static net.ci4j.immutable.redux.impl.Loggers.SUBSCRIBING_LOGGER;
 
-public abstract class AbstractStore implements ReduxStore
+public class Store implements ReduxStore
 {
 	protected final StateCoreStrategy coreStrategy;
 
 	private final ReduxReducer reducer;
 
-	private ImmutableList<VoidFn2<ReduxAction, ReduxState>> middlewares;
+	private ImmutableList<Middleware> middlewares;
 
 	private HashMap<UUID, Consumer<ReduxState>> subscribers = new HashMap<>();
 
-	public AbstractStore(StateCore coreType, ReduxReducer reducer)
+	public Store(StateCore coreType, ReduxState initialState, ReduxReducer reducer)
 	{
-		this(coreType.createStrategy(), reducer);
+		this(coreType.createStrategy(initialState), reducer);
 	}
 
-	public AbstractStore(StateCoreStrategy coreStrategy, ReduxReducer reducer)
+	public Store(StateCoreStrategy coreStrategy, ReduxReducer reducer)
 	{
 		this.coreStrategy = coreStrategy;
 		this.reducer = reducer;
 	}
 
-	public AbstractStore(StateCore coreType, ReduxReducer reducer, VoidFn2<ReduxAction, ReduxState>... middlewares)
+	public Store(StateCore coreType, ReduxState initialState, ReduxReducer reducer, Middleware... middlewares)
 	{
-		this(coreType.createStrategy(), reducer, middlewares);
+		this(coreType.createStrategy(initialState), reducer, middlewares);
 	}
 
-	public AbstractStore(StateCoreStrategy coreStrategy, ReduxReducer reducer, VoidFn2<ReduxAction, ReduxState>... middlewares)
+	public Store(StateCoreStrategy coreStrategy, ReduxReducer reducer, Middleware... middlewares)
 	{
 		this(coreStrategy, reducer);
 		this.middlewares = ImmutableList.create(middlewares);
