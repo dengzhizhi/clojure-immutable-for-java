@@ -53,6 +53,7 @@ public class ClojureRT
 	public static final IFn MERGE_WITH = var("clojure.core", "merge-with");
 
 	public static final IFn MAP = var("clojure.core", "map");
+	public static final IFn REDUCE = var("clojure.core", "reduce");
 
 	public static final IFn SWAP_ATOM = var("clojure.core", "swap!");
 	public static final IFn RESET_ATOM = var("clojure.core", "reset!");

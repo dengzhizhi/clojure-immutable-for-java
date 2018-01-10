@@ -1,11 +1,11 @@
 /**
- *   Copyright (c) Zhizhi Deng. All rights reserved.
- *   The use and distribution terms for this software are covered by the
- *   Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
- *   which can be found in the file epl-v10.html at the root of this distribution.
- *   By using this software in any fashion, you are agreeing to be bound by
- * 	 the terms of this license.
- *   You must not remove this notice, or any other, from this software.
+ * Copyright (c) Zhizhi Deng. All rights reserved.
+ * The use and distribution terms for this software are covered by the
+ * Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
+ * which can be found in the file epl-v10.html at the root of this distribution.
+ * By using this software in any fashion, you are agreeing to be bound by
+ * the terms of this license.
+ * You must not remove this notice, or any other, from this software.
  **/
 
 package net.ci4j.immutable.collections;
@@ -15,6 +15,7 @@ import clojure.lang.IPersistentVector;
 import clojure.lang.ISeq;
 import clojure.lang.ITransientVector;
 import clojure.lang.PersistentVector;
+import net.ci4j.fn.Fn2;
 import net.ci4j.immutable.clojure_utils.ClojureJson;
 import net.ci4j.immutable.clojure_utils.ClojureRT;
 import net.ci4j.immutable.clojure_utils.JsonParseException;
@@ -27,6 +28,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import static net.ci4j.immutable.fn.Fn.fn;
 
 /**
  * A typed immutable list backing by clojure vector.
@@ -549,4 +552,9 @@ public class ImmutableList<E> implements List<E>, ImmutableCollection<IPersisten
 		return vector;
 	}
 
+	public <T> T reduce(T initialValue, Fn2<T, E, T> reducer)
+	{
+		T result = (T) ClojureRT.REDUCE.invoke(fn(reducer), initialValue, getRaw());
+		return result;
+	}
 }
