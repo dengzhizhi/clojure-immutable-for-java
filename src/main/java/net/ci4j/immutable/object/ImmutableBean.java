@@ -196,9 +196,13 @@ public abstract class ImmutableBean<CONCRETE extends ImmutableBean> implements S
 		try
 		{
 			final T instance = clazz.newInstance();
-			instance.mutabilityStrategy = new TransientAssoc(((ATransientMap) ((IEditableCollection) origin.getRaw()).asTransient()));
+			APersistentMap raw = origin.getRaw();
+			if (raw instanceof PersistentArrayMap)
+			{
+				raw = ((APersistentMap) PersistentHashMap.create(raw));
+			}
+			instance.mutabilityStrategy = new TransientAssoc(((ATransientMap) ((IEditableCollection) raw).asTransient()));
 			return instance;
-
 		}
 		catch (InstantiationException | IllegalAccessException e)
 		{
