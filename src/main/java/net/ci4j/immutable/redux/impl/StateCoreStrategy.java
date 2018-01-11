@@ -20,12 +20,13 @@
  */
 package net.ci4j.immutable.redux.impl;
 
+import net.ci4j.immutable.collections.ImmutableMap;
 import net.ci4j.immutable.redux.ReduxAction;
-import net.ci4j.immutable.redux.ReduxState;
+import net.ci4j.immutable.redux.ReduxReducer;
 
 public interface StateCoreStrategy
 {
-	ReduxState getState();
+	ImmutableMap<Object, Object> getState();
 
-	void reduce(ReduxReducer reducer, ReduxAction action);
+	void reduce(ReduxReducer reducer, ReduxAction action, Object... params);
 }

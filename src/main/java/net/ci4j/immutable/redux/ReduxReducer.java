@@ -20,33 +20,12 @@
  */
 package net.ci4j.immutable.redux;
 
-import net.ci4j.immutable.collections.ImmutableList;
-import net.ci4j.immutable.redux.impl.ReduxReducer;
-import net.ci4j.immutable.stm.Atom;
+import net.ci4j.fn.Fn2;
+import net.ci4j.fn.Fn3;
+import net.ci4j.immutable.collections.ImmutableMap;
 
-public class CompositeReducer implements ReduxReducer
-{
-	private Atom<ImmutableList<ReduxReducer>> reducers;
+import java.io.Serializable;
 
-	public CompositeReducer()
-	{
-		reducers = new Atom<>(ImmutableList.refEmpty());
-	}
-
-	public void addReducer(ReduxReducer reducer)
-	{
-		reducers.swap(list -> list.cons(reducer));
-	}
-
-	public void addReducers(ReduxReducer... reducers)
-	{
-		this.reducers.swap(list -> list.consAll(reducers));
-	}
-
-	@Override
-	public ReduxState apply(ReduxAction action, ReduxState state)
-	{
-		ReduxState newState = this.reducers.deref().reduce(state, (s, r) -> r.apply(action, s));
-		return newState;
-	}
-}
+@FunctionalInterface
+public interface ReduxReducer extends Fn3<ReduxAction, ImmutableMap<Object, Object>, Object[], ImmutableMap<Object, Object>>, Serializable
+{}

@@ -20,24 +20,25 @@
  */
 package net.ci4j.immutable.redux.impl;
 
+import net.ci4j.immutable.collections.ImmutableMap;
 import net.ci4j.immutable.redux.ReduxAction;
-import net.ci4j.immutable.redux.ReduxState;
+import net.ci4j.immutable.redux.ReduxReducer;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class LockingStateCoreStrategy implements StateCoreStrategy
 {
-	private ReduxState state;
+	private ImmutableMap<Object, Object> state;
 	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
 
-	public LockingStateCoreStrategy(ReduxState initialState)
+	public LockingStateCoreStrategy(ImmutableMap<Object, Object> initialState)
 	{
 		this.state = initialState;
 	}
 
 	@Override
-	public ReduxState getState()
+	public ImmutableMap<Object, Object> getState()
 	{
 		lock.readLock().lock();
 		try
@@ -50,12 +51,12 @@ public class LockingStateCoreStrategy implements StateCoreStrategy
 	}
 
 	@Override
-	public void reduce(ReduxReducer reducer, ReduxAction action)
+	public void reduce(ReduxReducer reducer, ReduxAction action, Object[] params)
 	{
 		lock.writeLock().lock();
 		try
 		{
-			this.state = reducer.apply(action, this.state);
+			this.state = reducer.apply(action, this.state, params);
 		} finally
 		{
 			lock.writeLock().unlock();

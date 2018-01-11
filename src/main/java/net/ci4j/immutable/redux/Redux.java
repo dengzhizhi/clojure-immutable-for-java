@@ -20,23 +20,23 @@
  */
 package net.ci4j.immutable.redux;
 
-import net.ci4j.immutable.redux.impl.ReduxReducer;
+import net.ci4j.immutable.collections.ImmutableMap;
 import net.ci4j.immutable.redux.impl.Store;
 
 public class Redux
 {
-	public static ReduxStore createStore(StateCore stateCoreType, ReduxState initialState, ReduxReducer reduxReducer, Middleware... middlewares)
+	public static ReduxStore createStore(StateCore stateCoreType, ImmutableMap<Object, Object> initialState, ReduxReducer reduxReducer, Middleware... middlewares)
 	{
 		return new Store(stateCoreType, initialState, reduxReducer, middlewares);
 	}
 
 	public static ReduxReducer combineReducers(ReduxReducer... reduxReducers)
 	{
-		return (action, state) -> {
-			ReduxState nextState = state;
+		return (action, state, params) -> {
+			ImmutableMap<Object, Object> nextState = state;
 			for (ReduxReducer reducer : reduxReducers)
 			{
-				nextState = reducer.apply(action, nextState);
+				nextState = reducer.apply(action, nextState, params);
 			}
 			return nextState;
 		};

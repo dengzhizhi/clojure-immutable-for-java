@@ -27,9 +27,11 @@ import clojure.lang.ISeq;
 import clojure.lang.ITransientMap;
 import clojure.lang.PersistentArrayMap;
 import clojure.lang.PersistentHashMap;
+import net.ci4j.fn.Fn1;
 import net.ci4j.immutable.clojure_utils.ClojureJson;
 import net.ci4j.immutable.clojure_utils.ClojureRT;
 import net.ci4j.immutable.clojure_utils.JsonParseException;
+import net.ci4j.immutable.fn.Fn;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -398,5 +400,19 @@ public class ImmutableMap<K, V> implements Map<K, V>, ImmutableCollection<APersi
 	public APersistentMap getRaw()
 	{
 		return map;
+	}
+
+	public ImmutableMap<K, V> update(K key, Fn1<V, V> transformer)
+	{
+		APersistentMap raw = getRaw();
+		APersistentMap newState = (APersistentMap) ClojureRT.UPDATE.invoke(raw, key, Fn.fn(transformer));
+		return raw != newState ? new ImmutableMap<>(newState) : this;
+	}
+
+	public ImmutableMap<K, V> updateIn(ISeq keys, Fn1<V, V> transformer)
+	{
+		APersistentMap raw = getRaw();
+		APersistentMap newState = (APersistentMap) ClojureRT.UPDATE_IN.invoke(raw, keys, Fn.fn(transformer));
+		return raw != newState ? new ImmutableMap<>(newState) : this;
 	}
 }

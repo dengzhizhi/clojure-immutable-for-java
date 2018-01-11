@@ -21,9 +21,10 @@
 package net.ci4j.immutable.redux;
 
 import net.ci4j.fn.VoidFn2;
+import net.ci4j.immutable.collections.ImmutableMap;
 
 import java.io.Serializable;
 
 @FunctionalInterface
-public interface Middleware extends VoidFn2<ReduxAction, ReduxState>, Serializable
+public interface Middleware extends VoidFn2<ReduxAction, ImmutableMap<Object, Object>>, Serializable
 {}

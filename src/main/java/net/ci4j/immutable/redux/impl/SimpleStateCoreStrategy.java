@@ -20,27 +20,28 @@
  */
 package net.ci4j.immutable.redux.impl;
 
+import net.ci4j.immutable.collections.ImmutableMap;
 import net.ci4j.immutable.redux.ReduxAction;
-import net.ci4j.immutable.redux.ReduxState;
+import net.ci4j.immutable.redux.ReduxReducer;
 
 public class SimpleStateCoreStrategy implements StateCoreStrategy
 {
-	private ReduxState state;
+	private ImmutableMap<Object, Object> state;
 
-	public SimpleStateCoreStrategy(ReduxState initialState)
+	public SimpleStateCoreStrategy(ImmutableMap<Object, Object> initialState)
 	{
 		this.state = initialState;
 	}
 
 	@Override
-	public ReduxState getState()
+	public ImmutableMap<Object, Object> getState()
 	{
 		return state;
 	}
 
 	@Override
-	public void reduce(ReduxReducer reducer, ReduxAction action)
+	public void reduce(ReduxReducer reducer, ReduxAction action, Object[] params)
 	{
-		this.state = reducer.apply(action, state);
+		this.state = reducer.apply(action, state, params);
 	}
 }

@@ -24,9 +24,10 @@ import com.fasterxml.jackson.core.JsonParseException;
 import net.ci4j.fn.VoidFn2;
 import net.ci4j.immutable.clojure_utils.ClojureJson;
 import net.ci4j.immutable.collections.ImmutableList;
+import net.ci4j.immutable.collections.ImmutableMap;
 import net.ci4j.immutable.redux.Middleware;
 import net.ci4j.immutable.redux.ReduxAction;
-import net.ci4j.immutable.redux.ReduxState;
+import net.ci4j.immutable.redux.ReduxReducer;
 import net.ci4j.immutable.redux.ReduxStore;
 import net.ci4j.immutable.redux.StateCore;
 
@@ -47,9 +48,9 @@ public class Store implements ReduxStore
 
 	private ImmutableList<Middleware> middlewares;
 
-	private HashMap<UUID, Consumer<ReduxState>> subscribers = new HashMap<>();
+	private HashMap<UUID, Consumer<ImmutableMap<Object, Object>>> subscribers = new HashMap<>();
 
-	public Store(StateCore coreType, ReduxState initialState, ReduxReducer reducer)
+	public Store(StateCore coreType, ImmutableMap<Object, Object> initialState, ReduxReducer reducer)
 	{
 		this(coreType.createStrategy(initialState), reducer);
 	}
@@ -60,7 +61,7 @@ public class Store implements ReduxStore
 		this.reducer = reducer;
 	}
 
-	public Store(StateCore coreType, ReduxState initialState, ReduxReducer reducer, Middleware... middlewares)
+	public Store(StateCore coreType, ImmutableMap<Object, Object> initialState, ReduxReducer reducer, Middleware... middlewares)
 	{
 		this(coreType.createStrategy(initialState), reducer, middlewares);
 	}
@@ -72,35 +73,35 @@ public class Store implements ReduxStore
 	}
 
 	@Override
-	public ReduxState getState()
+	public ImmutableMap<Object, Object> getState()
 	{
 		return coreStrategy.getState();
 	}
 
 	@Override
-	public void dispatch(ReduxAction action)
+	public void dispatch(ReduxAction action, Object... params)
 	{
-		if (this.middlewares == null)
+		if (this.middlewares == null || middlewares.isEmpty())
 		{
-			internalDispatch(action);
+			internalDispatch(action, params);
 		}
 		else
 		{
-			for (VoidFn2<ReduxAction, ReduxState> middleware : this.middlewares)
+			for (VoidFn2<ReduxAction, ImmutableMap<Object, Object>> middleware : this.middlewares)
 			{
-				internalDispatch(action);
+				internalDispatch(action, params);
 				middleware.apply(action, this.getState());
 			}
 		}
 	}
 
-	private void internalDispatch(ReduxAction action)
+	private void internalDispatch(ReduxAction action, Object... params)
 	{
 		if (DISPATCHER_LOGGER.isTraceEnabled())
 		{
 			DISPATCHER_LOGGER.trace("Dispatching: " + action);
 		}
-		reduce(action);
+		reduce(action, params);
 		notifySubscribers();
 	}
 
@@ -111,14 +112,14 @@ public class Store implements ReduxStore
 			NOTIFIER_LOGGER.trace("Notifying {} subscribers.", this.subscribers.size());
 		}
 
-		for (Consumer<ReduxState> e : subscribers.values())
+		for (Consumer<ImmutableMap<Object, Object>> e : subscribers.values())
 		{
 			e.accept(this.getState());
 		}
 	}
 
 	@Override
-	public UUID subscribe(Consumer<ReduxState> subscriber)
+	public UUID subscribe(Consumer<ImmutableMap<Object, Object>> subscriber)
 	{
 		UUID uuid = UUID.randomUUID();
 		this.subscribers.put(uuid, subscriber);
@@ -142,14 +143,14 @@ public class Store implements ReduxStore
 		this.subscribers.remove(subscriberId);
 	}
 
-	private void reduce(ReduxAction action)
+	private void reduce(ReduxAction action, Object... params)
 	{
 		if (REDUCER_LOGGER.isTraceEnabled())
 		{
 			REDUCER_LOGGER.trace("Will reduce: " + this.getState());
 		}
 
-		this.coreStrategy.reduce(this.reducer, action);
+		this.coreStrategy.reduce(this.reducer, action, params);
 
 		if (REDUCER_LOGGER.isTraceEnabled())
 		{

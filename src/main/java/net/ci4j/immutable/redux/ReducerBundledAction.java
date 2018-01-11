@@ -18,14 +18,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.ci4j.immutable.redux.impl;
+package net.ci4j.immutable.redux;
 
-import net.ci4j.fn.Fn2;
-import net.ci4j.immutable.redux.ReduxAction;
-import net.ci4j.immutable.redux.ReduxState;
+import javax.swing.Action;
 
-import java.io.Serializable;
-
-@FunctionalInterface
-public interface ReduxReducer extends Fn2<ReduxAction, ReduxState, ReduxState>, Serializable
-{}
+public interface ReducerBundledAction extends Action
+{
+	ReduxReducer getReducer();
+}

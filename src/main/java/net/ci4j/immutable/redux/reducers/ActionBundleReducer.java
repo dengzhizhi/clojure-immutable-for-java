@@ -18,31 +18,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.ci4j.immutable.redux;
+package net.ci4j.immutable.redux.reducers;
 
 import net.ci4j.immutable.collections.ImmutableMap;
-import net.ci4j.immutable.redux.impl.AtomStateCoreStrategy;
-import net.ci4j.immutable.redux.impl.LockingStateCoreStrategy;
-import net.ci4j.immutable.redux.impl.SimpleStateCoreStrategy;
-import net.ci4j.immutable.redux.impl.StateCoreStrategy;
+import net.ci4j.immutable.redux.ReducerBundledAction;
+import net.ci4j.immutable.redux.ReduxAction;
+import net.ci4j.immutable.redux.ReduxReducer;
 
-import java.util.function.Function;
-
-public enum StateCore
+/**
+ * ActionBundlerReducer is the default handler for {@link ReducerBundledAction}. You must include this reducer
+ * in the store to get {@link ReducerBundledAction} working.
+ */
+public class ActionBundleReducer implements ReduxReducer
 {
-	SINGLE_THREAD(SimpleStateCoreStrategy::new),
-	LOCKING(LockingStateCoreStrategy::new),
-	ATOM(AtomStateCoreStrategy::new);
-
-	private Function<ImmutableMap<Object, Object>, StateCoreStrategy> strategyFactory;
-
-	StateCore(Function<ImmutableMap<Object, Object>, StateCoreStrategy> strategyFactory)
+	@Override
+	public ImmutableMap<Object, Object> apply(ReduxAction action, ImmutableMap<Object, Object> state, Object... params)
 	{
-		this.strategyFactory = strategyFactory;
-	}
-
-	public StateCoreStrategy createStrategy(ImmutableMap<Object, Object> initialState)
-	{
-		return this.strategyFactory.apply(initialState);
+		if (action instanceof ReducerBundledAction)
+		{
+			final ReduxReducer reducer = ((ReducerBundledAction) action).getReducer();
+			return reducer.apply(action, state, params);
+		}
+		else
+		{
+			return state;
+		}
 	}
 }

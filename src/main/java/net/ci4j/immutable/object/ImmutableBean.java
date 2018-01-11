@@ -208,7 +208,7 @@ public abstract class ImmutableBean<CONCRETE extends ImmutableBean> implements S
 		{
 			throw new RuntimeException("Failed to instantiate mutable copy of ImmutableBean " + clazz.getName(), e);
 		}
-	};
+	}
 
 	protected void resetInternalMap(APersistentMap internalMap)
 	{

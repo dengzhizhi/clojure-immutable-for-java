@@ -30,9 +30,9 @@ public interface ReduxStore extends Serializable
 {
 	ImmutableMap getState();
 
-	void dispatch(ReduxAction action);
+	void dispatch(ReduxAction action, Object... params);
 
-	UUID subscribe(Consumer<ReduxState> subscriber);
+	UUID subscribe(Consumer<ImmutableMap<Object, Object>> subscriber);
 
 	void unsubscribe(UUID subscribeId);
 }
